@@ -13,18 +13,24 @@ PASSWORD = "MyBudget-Strong-Password-47!"
 
 
 class HomepageAndRoutingTests(TestCase):
-    def test_homepage_displays_navigation_to_app_sections(self):
+    def test_homepage_shows_splash_screen_for_signed_out_users(self):
         response = self.client.get(reverse("home"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
-        self.assertContains(response, "Welcome to MyBudget")
-        self.assertContains(response, reverse("budgets_index"))
-        self.assertContains(response, reverse("transactions_index"))
+        self.assertContains(response, "Make room for a better money picture.")
+        self.assertContains(response, reverse("profile_register"))
+        self.assertContains(response, reverse("profile_login"))
+        self.assertNotContains(response, "Welcome to MyBudget")
 
     def test_homepage_shows_profile_icon_only_for_authenticated_users(self):
         anonymous_response = self.client.get(reverse("home"))
         self.assertNotContains(anonymous_response, 'aria-label="Your profile"')
+        self.assertContains(
+            anonymous_response,
+            f'href="{reverse("profile_login")}"',
+        )
+        self.assertContains(anonymous_response, ">Log In</a>")
 
         user = User.objects.create_user(
             username="homeuser",
@@ -35,8 +41,11 @@ class HomepageAndRoutingTests(TestCase):
 
         response = self.client.get(reverse("home"))
 
+        self.assertContains(response, "Welcome to MyBudget")
+        self.assertContains(response, reverse("bank_accounts_index"))
         self.assertContains(response, 'aria-label="Your profile"')
         self.assertContains(response, f'href="{reverse("profile_detail")}"')
+        self.assertNotContains(response, ">Log In</a>")
         self.assertNotContains(response, ">Profile</a>")
         self.assertContains(response, reverse("budgets_index"))
         self.assertContains(response, reverse("transactions_index"))

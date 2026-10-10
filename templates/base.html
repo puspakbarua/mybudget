@@ -47,6 +47,8 @@
                         </li>
                     </ul>
                 </div>
+            {% else %}
+                <a class="btn btn-outline-light ms-auto" href="{% url 'profile_login' %}">Log In</a>
             {% endif %}
         </div>
     </nav>

@@ -2,12 +2,207 @@
 
 {% block title %}MyBudget{% endblock %}
 
+{% block extra_head %}
+    <style>
+        .welcome-page {
+            min-height: calc(100vh - 56px);
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 85% 10%, rgba(183, 218, 189, 0.42), transparent 34rem),
+                #f6f8f4;
+        }
+
+        .welcome-hero {
+            padding-top: clamp(4rem, 10vw, 8rem);
+            padding-bottom: clamp(4rem, 8vw, 7rem);
+        }
+
+        .welcome-copy {
+            max-width: 38rem;
+        }
+
+        .welcome-eyebrow {
+            color: #326a50;
+            letter-spacing: 0.12em;
+        }
+
+        .welcome-title {
+            color: #173b2c;
+            font-size: clamp(2.75rem, 6vw, 5rem);
+            letter-spacing: -0.055em;
+            line-height: 1.03;
+        }
+
+        .welcome-description {
+            max-width: 33rem;
+            color: #5f6d65;
+            font-size: 1.15rem;
+            line-height: 1.75;
+        }
+
+        .welcome-primary {
+            background: #1f513b;
+            border-color: #1f513b;
+        }
+
+        .welcome-primary:hover,
+        .welcome-primary:focus {
+            background: #173b2c;
+            border-color: #173b2c;
+        }
+
+        .welcome-art {
+            position: relative;
+            display: grid;
+            min-height: 22rem;
+            place-items: center;
+        }
+
+        .welcome-orbit {
+            position: absolute;
+            width: min(90%, 23rem);
+            aspect-ratio: 1;
+            border: 1px solid rgba(50, 106, 80, 0.14);
+            border-radius: 50%;
+        }
+
+        .welcome-orbit::before,
+        .welcome-orbit::after {
+            position: absolute;
+            content: "";
+            border: 1px solid rgba(50, 106, 80, 0.12);
+            border-radius: 50%;
+            inset: 12%;
+        }
+
+        .welcome-orbit::after {
+            inset: 25%;
+        }
+
+        .welcome-mark {
+            position: relative;
+            display: grid;
+            width: 10rem;
+            aspect-ratio: 1;
+            place-items: center;
+            border-radius: 2.5rem;
+            background: #1f513b;
+            box-shadow: 0 1.5rem 4rem rgba(31, 81, 59, 0.2);
+            transform: rotate(-7deg);
+        }
+
+        .welcome-mark svg {
+            width: 5rem;
+            color: #f3f6df;
+        }
+
+        .welcome-note {
+            position: absolute;
+            padding: 0.85rem 1.1rem;
+            border: 1px solid rgba(31, 81, 59, 0.08);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 0.75rem 2rem rgba(31, 59, 44, 0.08);
+            color: #315441;
+            font-weight: 600;
+        }
+
+        .welcome-note-one {
+            top: 14%;
+            right: 2%;
+        }
+
+        .welcome-note-two {
+            bottom: 15%;
+            left: 1%;
+        }
+
+        .welcome-feature {
+            height: 100%;
+            padding: 1.5rem;
+            border: 1px solid #e5ebe5;
+            border-radius: 1.25rem;
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .welcome-feature-number {
+            color: #4d8665;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <h1>Welcome to MyBudget</h1>
-    <p>Manage your budgets, track transactions, and stay on top of your money.</p>
-    <ul>
-        <li><a href="/bank_accounts/">Bank Accounts</a></li>
-        <li><a href="/budgets/">Budgets</a></li>
-        <li><a href="/transactions/">Transactions</a></li>
-    </ul>
+    {% if user.is_authenticated %}
+        <div class="container py-5">
+            <h1>Welcome to MyBudget</h1>
+            <p>Manage your budgets, track transactions, and stay on top of your money.</p>
+            <ul>
+                <li><a href="{% url 'bank_accounts_index' %}">Bank Accounts</a></li>
+                <li><a href="{% url 'budgets_index' %}">Budgets</a></li>
+                <li><a href="{% url 'transactions_index' %}">Transactions</a></li>
+            </ul>
+        </div>
+    {% else %}
+        <div class="welcome-page">
+            <section class="container welcome-hero">
+                <div class="row align-items-center gy-5">
+                    <div class="col-lg-7">
+                        <div class="welcome-copy">
+                            <p class="welcome-eyebrow text-uppercase fw-semibold small mb-3">A little more clarity, every day</p>
+                            <h1 class="welcome-title fw-semibold mb-4">Make room for a better money picture.</h1>
+                            <p class="welcome-description mb-4">
+                                Bring your budgets, accounts, and transactions into one calm, simple place.
+                                Start with a clearer view of what matters to you.
+                            </p>
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <a class="btn btn-primary welcome-primary btn-lg px-4" href="{% url 'profile_register' %}">Get started</a>
+                                <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'profile_login' %}">Log in</a>
+                            </div>
+                            <p class="small text-secondary mt-3 mb-0">Your personal finance workspace starts here.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="welcome-art" aria-hidden="true">
+                            <div class="welcome-orbit"></div>
+                            <div class="welcome-mark">
+                                <svg viewBox="0 0 80 80" fill="none">
+                                    <path d="M16 57V43h12v14H16Zm18 0V31h12v26H34Zm18 0V19h12v38H52Z" fill="currentColor"/>
+                                    <path d="m16 34 17-12 13 5 19-15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                                </svg>
+                            </div>
+                            <span class="welcome-note welcome-note-one">Plan with purpose</span>
+                            <span class="welcome-note welcome-note-two">See the whole picture</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="container pb-5" aria-label="What you can do with MyBudget">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <article class="welcome-feature">
+                            <p class="welcome-feature-number fw-semibold mb-2">01 / PLAN</p>
+                            <h2 class="h5 fw-semibold">Set a direction</h2>
+                            <p class="text-secondary mb-0">Create budgets that give your goals a place to start.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="welcome-feature">
+                            <p class="welcome-feature-number fw-semibold mb-2">02 / ORGANIZE</p>
+                            <h2 class="h5 fw-semibold">Keep things together</h2>
+                            <p class="text-secondary mb-0">Keep track of accounts and transactions in one workspace.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="welcome-feature">
+                            <p class="welcome-feature-number fw-semibold mb-2">03 / REFLECT</p>
+                            <h2 class="h5 fw-semibold">Build your picture</h2>
+                            <p class="text-secondary mb-0">Review your finances with a little more clarity.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </div>
+    {% endif %}
 {% endblock %}

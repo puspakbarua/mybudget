@@ -26,13 +26,13 @@ def home(request):
 
 def index(request):
     """Accounts index page."""
-    return render(request, "accounts/index.html")
+    return render(request, "profile/index.html")
 
 
 def register(request):
     """User registration view."""
     if request.user.is_authenticated:
-        return redirect('accounts_profile')
+        return redirect('profile_detail')
     
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -51,20 +51,20 @@ def register(request):
                     request,
                     f'Registration successful! Check your email at {user.email} to verify your account.'
                 )
-                return redirect('accounts_verify_email_sent')
+                return redirect('profile_verify_email_sent')
             except Exception as e:
                 messages.error(request, 'Registration failed. Error sending verification email.')
                 user.delete()
-                return redirect('accounts_register')
+                return redirect('profile_register')
     else:
         form = RegistrationForm()
     
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'profile/register.html', {'form': form})
 
 
 def verify_email_sent(request):
     """Show message after verification email is sent."""
-    return render(request, 'accounts/email_verification_sent.html')
+    return render(request, 'profile/email_verification_sent.html')
 
 
 def verify_email(request, token):
@@ -73,13 +73,13 @@ def verify_email(request, token):
         profile = UserProfile.objects.get(email_verification_token=token)
     except UserProfile.DoesNotExist:
         messages.error(request, 'Invalid verification link.')
-        return redirect('accounts_login')
+        return redirect('profile_login')
     
     # Check if token is expired
     if not profile.is_email_verification_token_valid():
         messages.error(request, 'Verification link has expired. Please register again.')
         profile.user.delete()
-        return redirect('accounts_register')
+        return redirect('profile_register')
     
     # Mark email as verified
     profile.email_verified = True
@@ -92,13 +92,13 @@ def verify_email(request, token):
     profile.user.save()
     
     messages.success(request, 'Email verified successfully! You can now log in.')
-    return redirect('accounts_login')
+    return redirect('profile_login')
 
 
 def login_view(request):
     """User login view."""
     if request.user.is_authenticated:
-        return redirect('accounts_profile')
+        return redirect('profile_detail')
     
     if request.method == 'POST':
         form = EmailAuthenticationForm(request.POST)
@@ -112,20 +112,20 @@ def login_view(request):
                     messages.warning(
                         request,
                         'Please verify your email before logging in. '
-                        '<a href="/accounts/resend-verification/">Resend verification email</a>'
+                        '<a href="/profile/resend-verification/">Resend verification email</a>'
                     )
-                    return redirect('accounts_login')
+                    return redirect('profile_login')
             except UserProfile.DoesNotExist:
                 # Create profile if it doesn't exist
                 UserProfile.objects.create(user=user, email_verified=True)
             
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            return redirect('accounts_profile')
+            return redirect('profile_detail')
     else:
         form = EmailAuthenticationForm()
     
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'profile/login.html', {'form': form})
 
 
 def logout_view(request):
@@ -133,11 +133,11 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         messages.success(request, 'You have been logged out successfully.')
-        return redirect('accounts_login')
-    return render(request, 'accounts/logout.html')
+        return redirect('profile_login')
+    return render(request, 'profile/logout.html')
 
 
-@login_required(login_url='accounts_login')
+@login_required(login_url='profile_login')
 def profile(request):
     """User profile view."""
     try:
@@ -148,13 +148,13 @@ def profile(request):
     context = {
         'profile': profile,
     }
-    return render(request, 'accounts/profile.html', context)
+    return render(request, 'profile/profile.html', context)
 
 
 def password_reset_request(request):
     """Request password reset view."""
     if request.user.is_authenticated:
-        return redirect('accounts_profile')
+        return redirect('profile_detail')
     
     if request.method == 'POST':
         form = PasswordResetRequestForm(request.POST)
@@ -168,13 +168,13 @@ def password_reset_request(request):
                     request,
                     'Password reset instructions have been sent to your email.'
                 )
-                return redirect('accounts_login')
+                return redirect('profile_login')
             except Exception as e:
                 messages.error(request, 'Error sending reset email. Please try again.')
     else:
         form = PasswordResetRequestForm()
     
-    return render(request, 'accounts/password_reset_request.html', {'form': form})
+    return render(request, 'profile/password_reset_request.html', {'form': form})
 
 
 def password_reset_confirm(request, token):
@@ -184,12 +184,12 @@ def password_reset_confirm(request, token):
         user = profile.user
     except UserProfile.DoesNotExist:
         messages.error(request, 'Invalid password reset link.')
-        return redirect('accounts_password_reset')
+        return redirect('profile_password_reset')
     
     # Check if token is expired
     if not profile.is_password_reset_token_valid():
         messages.error(request, 'Password reset link has expired.')
-        return redirect('accounts_password_reset')
+        return redirect('profile_password_reset')
     
     if request.method == 'POST':
         form = PasswordResetForm(user, request.POST)
@@ -202,9 +202,9 @@ def password_reset_confirm(request, token):
             profile.save()
             
             messages.success(request, 'Password reset successfully! You can now log in.')
-            return redirect('accounts_login')
+            return redirect('profile_login')
     else:
         form = PasswordResetForm(user)
     
-    return render(request, 'accounts/password_reset_confirm.html', {'form': form})
+    return render(request, 'profile/password_reset_confirm.html', {'form': form})
 

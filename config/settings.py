@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'apps.accounts',
+    'apps.profile',
     'apps.budgets',
     'apps.transactions',
 ]
@@ -137,7 +137,6 @@ DEFAULT_FROM_EMAIL = 'noreply@mybudget.local'
 # Authentication Settings
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth
 
-LOGIN_URL = 'accounts_login'
-LOGIN_REDIRECT_URL = 'accounts_profile'
-LOGOUT_REDIRECT_URL = 'accounts_login'
-
+LOGIN_URL = 'profile_login'
+LOGIN_REDIRECT_URL = 'profile_detail'
+LOGOUT_REDIRECT_URL = 'profile_login'

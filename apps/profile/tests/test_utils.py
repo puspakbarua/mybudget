@@ -5,8 +5,8 @@ from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from apps.accounts.models import UserProfile
-from apps.accounts.utils import (
+from apps.profile.models import UserProfile
+from apps.profile.utils import (
     create_password_reset_token_for_user,
     create_verification_token_for_user,
     generate_verification_token,
@@ -68,7 +68,7 @@ class AccountUtilityTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [self.user.email])
         self.assertIn(
-            "http://localhost:8000/accounts/verify-email/verification-token/",
+            "http://localhost:8000/profile/verify-email/verification-token/",
             mail.outbox[0].body,
         )
 
@@ -78,6 +78,6 @@ class AccountUtilityTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [self.user.email])
         self.assertIn(
-            "http://localhost:8000/accounts/password-reset/password-token/",
+            "http://localhost:8000/profile/password-reset/password-token/",
             mail.outbox[0].body,
         )

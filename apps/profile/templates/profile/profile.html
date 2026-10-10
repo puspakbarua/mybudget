@@ -9,17 +9,17 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'accounts_index' %}">MyBudget</a>
+            <a class="navbar-brand" href="{% url 'profile_index' %}">MyBudget</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'accounts_profile' %}">Profile</a>
+                        <a class="nav-link active" href="{% url 'profile_detail' %}">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <form method="post" action="{% url 'accounts_logout' %}" style="display:inline;">
+                        <form method="post" action="{% url 'profile_logout' %}" style="display:inline;">
                             {% csrf_token %}
                             <button class="nav-link btn btn-link" type="submit" style="border:none;cursor:pointer;">Logout</button>
                         </form>
@@ -105,7 +105,7 @@
                         <hr>
                         
                         <div class="d-grid gap-2">
-                            <form method="post" action="{% url 'accounts_logout' %}">
+                            <form method="post" action="{% url 'profile_logout' %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Log Out</button>
                             </form>
@@ -114,7 +114,7 @@
                 </div>
                 
                 <div class="text-center mt-4">
-                    <a href="{% url 'accounts_index' %}">Back to Home</a>
+                    <a href="{% url 'profile_index' %}">Back to Home</a>
                 </div>
             </div>
         </div>

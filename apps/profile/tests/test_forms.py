@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from apps.accounts.forms import (
+from apps.profile.forms import (
     EmailAuthenticationForm,
     PasswordResetForm,
     PasswordResetRequestForm,

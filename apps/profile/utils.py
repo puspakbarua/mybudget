@@ -17,7 +17,7 @@ def send_verification_email(user, token, base_url=None):
     """Send email verification link to user."""
     if base_url is None:
         base_url = 'http://localhost:8000'
-    verification_link = f"{base_url}/accounts/verify-email/{token}/"
+    verification_link = f"{base_url}/profile/verify-email/{token}/"
     subject = 'Verify Your Email - MyBudget'
     message = f"""
 Hello {user.username},
@@ -47,7 +47,7 @@ def send_password_reset_email(user, token, base_url=None):
     """Send password reset link to user."""
     if base_url is None:
         base_url = 'http://localhost:8000'
-    reset_link = f"{base_url}/accounts/password-reset/{token}/"
+    reset_link = f"{base_url}/profile/password-reset/{token}/"
     subject = 'Password Reset - MyBudget'
     message = f"""
 Hello {user.username},

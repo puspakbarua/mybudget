@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.models import UserProfile
+from apps.profile.models import UserProfile
 
 
 PASSWORD = "MyBudget-Strong-Password-47!"
@@ -19,7 +19,25 @@ class HomepageAndRoutingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
         self.assertContains(response, "Welcome to MyBudget")
-        self.assertContains(response, reverse("accounts_index"))
+        self.assertContains(response, reverse("budgets_index"))
+        self.assertContains(response, reverse("transactions_index"))
+
+    def test_homepage_shows_profile_icon_only_for_authenticated_users(self):
+        anonymous_response = self.client.get(reverse("home"))
+        self.assertNotContains(anonymous_response, 'aria-label="Your profile"')
+
+        user = User.objects.create_user(
+            username="homeuser",
+            email="homeuser@example.com",
+            password=PASSWORD,
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, 'aria-label="Your profile"')
+        self.assertContains(response, f'href="{reverse("profile_detail")}"')
+        self.assertNotContains(response, ">Profile</a>")
         self.assertContains(response, reverse("budgets_index"))
         self.assertContains(response, reverse("transactions_index"))
 
@@ -38,12 +56,12 @@ class RegistrationAndVerificationTests(TestCase):
 
     def test_registration_creates_inactive_account_and_sends_verification_email(self):
         response = self.client.post(
-            reverse("accounts_register"), self.registration_data()
+            reverse("profile_register"), self.registration_data()
         )
 
         user = User.objects.get(username="newuser")
         profile = user.profile
-        self.assertRedirects(response, reverse("accounts_verify_email_sent"))
+        self.assertRedirects(response, reverse("profile_verify_email_sent"))
         self.assertFalse(user.is_active)
         self.assertFalse(profile.email_verified)
         self.assertTrue(profile.is_email_verification_token_valid())
@@ -67,7 +85,7 @@ class RegistrationAndVerificationTests(TestCase):
             ),
         ):
             with self.subTest(error=error):
-                response = self.client.post(reverse("accounts_register"), data)
+                response = self.client.post(reverse("profile_register"), data)
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, error)
         self.assertEqual(User.objects.count(), 1)
@@ -87,12 +105,12 @@ class RegistrationAndVerificationTests(TestCase):
         )
 
         response = self.client.get(
-            reverse("accounts_verify_email", args=["valid-token"])
+            reverse("profile_verify_email", args=["valid-token"])
         )
 
         user.refresh_from_db()
         profile.refresh_from_db()
-        self.assertRedirects(response, reverse("accounts_login"))
+        self.assertRedirects(response, reverse("profile_login"))
         self.assertTrue(user.is_active)
         self.assertTrue(profile.email_verified)
         self.assertIsNone(profile.email_verification_token)
@@ -100,10 +118,10 @@ class RegistrationAndVerificationTests(TestCase):
 
     def test_invalid_verification_token_redirects_to_login(self):
         response = self.client.get(
-            reverse("accounts_verify_email", args=["unknown-token"])
+            reverse("profile_verify_email", args=["unknown-token"])
         )
 
-        self.assertRedirects(response, reverse("accounts_login"))
+        self.assertRedirects(response, reverse("profile_login"))
         self.assertEqual(User.objects.count(), 0)
 
     def test_expired_verification_token_deletes_unverified_account(self):
@@ -120,10 +138,10 @@ class RegistrationAndVerificationTests(TestCase):
         )
 
         response = self.client.get(
-            reverse("accounts_verify_email", args=["expired-token"])
+            reverse("profile_verify_email", args=["expired-token"])
         )
 
-        self.assertRedirects(response, reverse("accounts_register"))
+        self.assertRedirects(response, reverse("profile_register"))
         self.assertFalse(User.objects.filter(username="expired").exists())
 
 
@@ -139,25 +157,25 @@ class LoginAndProfileTests(TestCase):
 
     def test_login_accepts_username(self):
         response = self.client.post(
-            reverse("accounts_login"),
+            reverse("profile_login"),
             {"username_or_email": "activeuser", "password": PASSWORD},
         )
 
-        self.assertRedirects(response, reverse("accounts_profile"))
+        self.assertRedirects(response, reverse("profile_detail"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
 
     def test_login_accepts_email(self):
         response = self.client.post(
-            reverse("accounts_login"),
+            reverse("profile_login"),
             {"username_or_email": "active@example.com", "password": PASSWORD},
         )
 
-        self.assertRedirects(response, reverse("accounts_profile"))
+        self.assertRedirects(response, reverse("profile_detail"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
 
     def test_login_rejects_invalid_password(self):
         response = self.client.post(
-            reverse("accounts_login"),
+            reverse("profile_login"),
             {"username_or_email": "activeuser", "password": "wrong-password"},
         )
 
@@ -170,39 +188,39 @@ class LoginAndProfileTests(TestCase):
         self.user.profile.save()
 
         response = self.client.post(
-            reverse("accounts_login"),
+            reverse("profile_login"),
             {"username_or_email": "activeuser", "password": PASSWORD},
         )
 
-        self.assertRedirects(response, reverse("accounts_login"))
+        self.assertRedirects(response, reverse("profile_login"))
         self.assertNotIn("_auth_user_id", self.client.session)
 
     def test_authenticated_user_is_redirected_from_login_and_registration(self):
         self.client.force_login(self.user)
 
-        for url_name in ("accounts_login", "accounts_register"):
+        for url_name in ("profile_login", "profile_register"):
             with self.subTest(page=url_name):
                 response = self.client.get(reverse(url_name))
-                self.assertRedirects(response, reverse("accounts_profile"))
+                self.assertRedirects(response, reverse("profile_detail"))
 
     def test_profile_requires_login_and_displays_profile_for_authenticated_user(self):
-        response = self.client.get(reverse("accounts_profile"))
+        response = self.client.get(reverse("profile_detail"))
         self.assertRedirects(
             response,
-            f"{reverse('accounts_login')}?next={reverse('accounts_profile')}",
+            f"{reverse('profile_login')}?next={reverse('profile_detail')}",
         )
 
         self.client.force_login(self.user)
-        response = self.client.get(reverse("accounts_profile"))
+        response = self.client.get(reverse("profile_detail"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/profile.html")
+        self.assertTemplateUsed(response, "profile/profile.html")
         self.assertEqual(response.context["profile"], self.user.profile)
 
     def test_profile_creates_missing_profile(self):
         self.user.profile.delete()
         self.client.force_login(self.user)
 
-        response = self.client.get(reverse("accounts_profile"))
+        response = self.client.get(reverse("profile_detail"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
@@ -210,12 +228,12 @@ class LoginAndProfileTests(TestCase):
     def test_logout_page_and_post_logout(self):
         self.client.force_login(self.user)
 
-        get_response = self.client.get(reverse("accounts_logout"))
+        get_response = self.client.get(reverse("profile_logout"))
         self.assertEqual(get_response.status_code, 200)
-        self.assertTemplateUsed(get_response, "accounts/logout.html")
+        self.assertTemplateUsed(get_response, "profile/logout.html")
 
-        post_response = self.client.post(reverse("accounts_logout"))
-        self.assertRedirects(post_response, reverse("accounts_login"))
+        post_response = self.client.post(reverse("profile_logout"))
+        self.assertRedirects(post_response, reverse("profile_login"))
         self.assertNotIn("_auth_user_id", self.client.session)
 
 
@@ -231,18 +249,18 @@ class PasswordResetViewTests(TestCase):
 
     def test_password_reset_request_sends_email_with_saved_token(self):
         response = self.client.post(
-            reverse("accounts_password_reset"), {"email": self.user.email}
+            reverse("profile_password_reset"), {"email": self.user.email}
         )
 
         self.user.profile.refresh_from_db()
-        self.assertRedirects(response, reverse("accounts_login"))
+        self.assertRedirects(response, reverse("profile_login"))
         self.assertTrue(self.user.profile.is_password_reset_token_valid())
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(self.user.profile.password_reset_token, mail.outbox[0].body)
 
     def test_password_reset_request_rejects_unknown_email(self):
         response = self.client.post(
-            reverse("accounts_password_reset"), {"email": "missing@example.com"}
+            reverse("profile_password_reset"), {"email": "missing@example.com"}
         )
 
         self.assertEqual(response.status_code, 200)
@@ -258,23 +276,23 @@ class PasswordResetViewTests(TestCase):
         new_password = "Another-Strong-Password-83!"
 
         response = self.client.post(
-            reverse("accounts_password_reset_confirm", args=["reset-token"]),
+            reverse("profile_password_reset_confirm", args=["reset-token"]),
             {"new_password1": new_password, "new_password2": new_password},
         )
 
         self.user.refresh_from_db()
         self.user.profile.refresh_from_db()
-        self.assertRedirects(response, reverse("accounts_login"))
+        self.assertRedirects(response, reverse("profile_login"))
         self.assertTrue(self.user.check_password(new_password))
         self.assertIsNone(self.user.profile.password_reset_token)
         self.assertIsNone(self.user.profile.password_reset_token_expires_at)
 
     def test_invalid_password_reset_token_redirects_to_request_form(self):
         response = self.client.get(
-            reverse("accounts_password_reset_confirm", args=["invalid-token"])
+            reverse("profile_password_reset_confirm", args=["invalid-token"])
         )
 
-        self.assertRedirects(response, reverse("accounts_password_reset"))
+        self.assertRedirects(response, reverse("profile_password_reset"))
 
     def test_expired_password_reset_token_cannot_be_used(self):
         self.user.profile.password_reset_token = "expired-token"
@@ -284,8 +302,8 @@ class PasswordResetViewTests(TestCase):
         self.user.profile.save()
 
         response = self.client.get(
-            reverse("accounts_password_reset_confirm", args=["expired-token"])
+            reverse("profile_password_reset_confirm", args=["expired-token"])
         )
 
-        self.assertRedirects(response, reverse("accounts_password_reset"))
+        self.assertRedirects(response, reverse("profile_password_reset"))
         self.assertTrue(self.user.check_password(PASSWORD))

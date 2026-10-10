@@ -9,7 +9,7 @@
             overflow: hidden;
             background:
                 radial-gradient(ellipse at 85% 10%, rgba(183, 218, 189, 0.42), transparent 34rem),
-                #f6f8f4;
+                var(--mybudget-paper);
         }
 
         .welcome-hero {
@@ -22,12 +22,12 @@
         }
 
         .welcome-eyebrow {
-            color: #326a50;
+            color: var(--mybudget-leaf);
             letter-spacing: 0.12em;
         }
 
         .welcome-title {
-            color: #173b2c;
+            color: var(--mybudget-forest);
             font-size: clamp(2.75rem, 6vw, 5rem);
             letter-spacing: -0.055em;
             line-height: 1.03;
@@ -35,20 +35,20 @@
 
         .welcome-description {
             max-width: 33rem;
-            color: #5f6d65;
+            color: var(--mybudget-muted);
             font-size: 1.15rem;
             line-height: 1.75;
         }
 
         .welcome-primary {
-            background: #1f513b;
-            border-color: #1f513b;
+            background: var(--mybudget-green);
+            border-color: var(--mybudget-green);
         }
 
         .welcome-primary:hover,
         .welcome-primary:focus {
-            background: #173b2c;
-            border-color: #173b2c;
+            background: var(--mybudget-forest);
+            border-color: var(--mybudget-forest);
         }
 
         .welcome-art {
@@ -86,7 +86,7 @@
             aspect-ratio: 1;
             place-items: center;
             border-radius: 2.5rem;
-            background: #1f513b;
+            background: var(--mybudget-green);
             box-shadow: 0 1.5rem 4rem rgba(31, 81, 59, 0.2);
             transform: rotate(-7deg);
         }
@@ -120,7 +120,7 @@
         .welcome-feature {
             height: 100%;
             padding: 1.5rem;
-            border: 1px solid #e5ebe5;
+            border: 1px solid var(--mybudget-line);
             border-radius: 1.25rem;
             background: rgba(255, 255, 255, 0.72);
         }
@@ -136,13 +136,32 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="container py-5">
-            <h1>Welcome to MyBudget</h1>
-            <p>Manage your budgets, track transactions, and stay on top of your money.</p>
-            <ul>
-                <li><a href="{% url 'bank_accounts_index' %}">Bank Accounts</a></li>
-                <li><a href="{% url 'budgets_index' %}">Budgets</a></li>
-                <li><a href="{% url 'transactions_index' %}">Transactions</a></li>
-            </ul>
+            <p class="welcome-eyebrow text-uppercase fw-semibold small mb-2">Your money workspace</p>
+            <h1 class="welcome-title fw-semibold mb-3">Welcome to MyBudget</h1>
+            <p class="welcome-description mb-4">Manage your budgets, track transactions, and stay on top of your money.</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a class="welcome-feature d-block text-decoration-none h-100" href="{% url 'bank_accounts_index' %}">
+                        <p class="welcome-feature-number fw-semibold mb-2">01 / ACCOUNTS</p>
+                        <h2 class="h5 fw-semibold">Bank Accounts</h2>
+                        <p class="text-secondary mb-0">Keep your financial accounts together.</p>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a class="welcome-feature d-block text-decoration-none h-100" href="{% url 'budgets_index' %}">
+                        <p class="welcome-feature-number fw-semibold mb-2">02 / PLAN</p>
+                        <h2 class="h5 fw-semibold">Budgets</h2>
+                        <p class="text-secondary mb-0">Give your spending goals a plan.</p>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a class="welcome-feature d-block text-decoration-none h-100" href="{% url 'transactions_index' %}">
+                        <p class="welcome-feature-number fw-semibold mb-2">03 / ACTIVITY</p>
+                        <h2 class="h5 fw-semibold">Transactions</h2>
+                        <p class="text-secondary mb-0">Review your day-to-day money activity.</p>
+                    </a>
+                </div>
+            </div>
         </div>
     {% else %}
         <div class="welcome-page">

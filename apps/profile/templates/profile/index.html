@@ -3,7 +3,13 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-    <h1>Profile</h1>
-    <p>Account management will be available here.</p>
-    <p><a href="{% url 'home' %}">Back to home</a></p>
+    <div class="container py-5">
+        <div class="card">
+            <div class="card-body">
+                <h1>Profile</h1>
+                <p class="text-secondary">Account management will be available here.</p>
+                <a href="{% url 'home' %}">Back to home</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -3,7 +3,13 @@
 {% block title %}Bank Accounts{% endblock %}
 
 {% block content %}
-    <h1>Bank Accounts</h1>
-    <p>Bank account management will be available here.</p>
-    <p><a href="{% url 'home' %}">Back to home</a></p>
+    <div class="container py-5">
+        <div class="card">
+            <div class="card-body">
+                <h1>Bank Accounts</h1>
+                <p class="text-secondary">Bank account management will be available here.</p>
+                <a href="{% url 'home' %}">Back to home</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

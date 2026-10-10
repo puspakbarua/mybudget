@@ -25,4 +25,5 @@ urlpatterns = [
     path('profile/', include('apps.profile.urls')),
     path('budgets/', include('apps.budgets.urls')),
     path('transactions/', include('apps.transactions.urls')),
+    path('bank_accounts/', include('apps.bank_accounts.urls'))
 ]

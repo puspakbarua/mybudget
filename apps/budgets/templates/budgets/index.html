@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budgets</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Budgets{% endblock %}
+
+{% block content %}
     <h1>Budgets</h1>
     <p>Budget management will be available here.</p>
-    <p><a href="/">Back to home</a></p>
-</body>
-</html>
+    <p><a href="{% url 'home' %}">Back to home</a></p>
+{% endblock %}

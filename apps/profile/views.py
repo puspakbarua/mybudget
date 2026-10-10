@@ -98,7 +98,7 @@ def verify_email(request, token):
 def login_view(request):
     """User login view."""
     if request.user.is_authenticated:
-        return redirect('profile_detail')
+        return redirect('home')
     
     if request.method == 'POST':
         form = EmailAuthenticationForm(request.POST)
@@ -121,7 +121,7 @@ def login_view(request):
             
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            return redirect('profile_detail')
+            return redirect('home')
     else:
         form = EmailAuthenticationForm()
     
@@ -207,4 +207,3 @@ def password_reset_confirm(request, token):
         form = PasswordResetForm(user)
     
     return render(request, 'profile/password_reset_confirm.html', {'form': form})
-

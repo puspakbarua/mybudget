@@ -139,5 +139,5 @@ DEFAULT_FROM_EMAIL = 'noreply@mybudget.local'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth
 
 LOGIN_URL = 'profile_login'
-LOGIN_REDIRECT_URL = 'profile_detail'
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'profile_login'

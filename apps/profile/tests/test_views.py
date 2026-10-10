@@ -170,7 +170,7 @@ class LoginAndProfileTests(TestCase):
             {"username_or_email": "activeuser", "password": PASSWORD},
         )
 
-        self.assertRedirects(response, reverse("profile_detail"))
+        self.assertRedirects(response, reverse("home"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
 
     def test_login_accepts_email(self):
@@ -179,7 +179,7 @@ class LoginAndProfileTests(TestCase):
             {"username_or_email": "active@example.com", "password": PASSWORD},
         )
 
-        self.assertRedirects(response, reverse("profile_detail"))
+        self.assertRedirects(response, reverse("home"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
 
     def test_login_rejects_invalid_password(self):
@@ -207,10 +207,13 @@ class LoginAndProfileTests(TestCase):
     def test_authenticated_user_is_redirected_from_login_and_registration(self):
         self.client.force_login(self.user)
 
-        for url_name in ("profile_login", "profile_register"):
+        for url_name, redirect_name in (
+            ("profile_login", "home"),
+            ("profile_register", "profile_detail"),
+        ):
             with self.subTest(page=url_name):
                 response = self.client.get(reverse(url_name))
-                self.assertRedirects(response, reverse("profile_detail"))
+                self.assertRedirects(response, reverse(redirect_name))
 
     def test_profile_requires_login_and_displays_profile_for_authenticated_user(self):
         response = self.client.get(reverse("profile_detail"))

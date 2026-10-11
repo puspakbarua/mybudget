@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import index
+from .views import accounts
 
 urlpatterns = [
-    path("", index, name="bank_accounts_index"),
+    path("", accounts, name="bank_accounts_index"),
 ]

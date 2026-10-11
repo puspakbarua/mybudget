@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ category.name }}{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="h2">Delete category</h1>
+                        <p>Are you sure you want to delete <strong>{{ category.name }}</strong>?</p>
+                        {% if can_delete %}
+                            <p class="text-secondary">This action cannot be undone.</p>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-danger" type="submit">Delete category</button>
+                                    <a class="btn btn-outline-secondary" href="{% url 'categories_index' %}">Cancel</a>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                This category is used by a transaction or budget and cannot be deleted.
+                            </div>
+                            <a class="btn btn-outline-secondary" href="{% url 'categories_index' %}">Back to categories</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

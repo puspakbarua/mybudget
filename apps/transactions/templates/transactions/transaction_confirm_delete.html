@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Delete transaction{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="small text-uppercase fw-semibold text-success mb-2">Your finances</p>
+                        <h1 class="h2">Delete transaction</h1>
+                        <p>
+                            Are you sure you want to delete
+                            <strong>{{ transaction.description }}</strong> for
+                            <strong>{{ transaction.amount }} {{ transaction.account.currency }}</strong>
+                            dated <strong>{{ transaction.transaction_date|date:"M j, Y" }}</strong>?
+                        </p>
+                        <p class="text-secondary">This action cannot be undone.</p>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-danger" type="submit">Delete transaction</button>
+                                <a class="btn btn-outline-secondary" href="{% url 'transactions_index' %}">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

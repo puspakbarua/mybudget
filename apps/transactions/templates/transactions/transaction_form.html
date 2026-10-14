@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="small text-uppercase fw-semibold text-success mb-2">Your finances</p>
+                        <h1 class="h2 mb-2">{{ title }}</h1>
+                        <p class="text-secondary mb-4">Record income, spending, or a transfer between your accounts.</p>
+
+                        {% if not form.fields.account.queryset.exists %}
+                            <div class="alert alert-info" role="status">
+                                Create an active bank account before adding a transaction.
+                                <a href="{% url 'bank_accounts_create' %}">Add bank account</a>
+                            </div>
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            {% bootstrap_form_errors form type="non_fields" %}
+
+                            <h2 class="h6 text-uppercase text-secondary fw-semibold mb-3">Transaction details</h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.transaction_type wrapper_class="mb-3" %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.amount wrapper_class="mb-3" %}
+                                </div>
+                            </div>
+                            {% bootstrap_field form.description wrapper_class="mb-3" %}
+                            {% bootstrap_field form.transaction_date wrapper_class="mb-3" %}
+
+                            <hr class="my-4">
+                            <h2 class="h6 text-uppercase text-secondary fw-semibold mb-3">Accounts and category</h2>
+                            {% bootstrap_field form.account wrapper_class="mb-3" %}
+                            {% bootstrap_field form.category wrapper_class="mb-3" %}
+                            <div id="transfer-account-field">
+                                {% bootstrap_field form.transfer_to_account wrapper_class="mb-1" %}
+                                <p class="form-text">Only needed when the transaction type is Transfer.</p>
+                            </div>
+
+                            <hr class="my-4">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-primary btn-lg px-4" type="submit">
+                                    {% if transaction %}Save changes{% else %}Save transaction{% endif %}
+                                </button>
+                                <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'transactions_index' %}">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        const transactionType = document.getElementById("id_transaction_type");
+        const transferAccountField = document.getElementById("transfer-account-field");
+
+        function updateTransferAccountVisibility() {
+            transferAccountField.hidden = transactionType.value !== "TRANSFER";
+        }
+
+        transactionType.addEventListener("change", updateTransferAccountVisibility);
+        updateTransferAccountVisibility();
+    </script>
+{% endblock %}

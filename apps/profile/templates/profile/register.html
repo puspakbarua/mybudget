@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
 {% block title %}Register - MyBudget{% endblock %}
 
@@ -21,51 +22,15 @@
                         
                         <form method="post" novalidate>
                             {% csrf_token %}
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.username.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <small class="form-text text-muted">150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>
+                            {% bootstrap_form_errors form type="non_fields" %}
+                            {% bootstrap_field form.username %}
+                            <div class="form-text mb-3">150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
+                            {% bootstrap_field form.email %}
+                            {% bootstrap_field form.password1 %}
+                            <div class="form-text mb-3">
+                                At least 8 characters and can't be entirely numeric.
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.email.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.password1.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <small class="form-text text-muted">
-                                    • At least 8 characters<br>
-                                    • Can't be entirely numeric
-                                </small>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.password2.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {% bootstrap_field form.password2 %}
                             
                             <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
                         </form>

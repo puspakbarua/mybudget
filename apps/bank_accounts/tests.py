@@ -132,6 +132,14 @@ class BankAccountManagementTests(TestCase):
         self.assertEqual(Account.objects.count(), 0)
         self.assertContains(response, "This field is required.")
 
+    def test_create_account_form_uses_bootstrap5_layout(self):
+        response = self.client.get(reverse("bank_accounts_create"))
+
+        self.assertContains(response, "Account details")
+        self.assertContains(response, "Starting balance")
+        self.assertContains(response, 'class="form-check form-switch"')
+        self.assertContains(response, 'name="opening_balance"')
+
     def test_update_account_changes_account(self):
         account = self.create_account()
 

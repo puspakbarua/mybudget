@@ -1,43 +1,54 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-7">
+            <div class="col-lg-8 col-xl-7">
                 <div class="card">
                     <div class="card-body">
-                        <h1 class="h2 mb-4">{{ title }}</h1>
+                        <p class="small text-uppercase fw-semibold text-success mb-2">Bank account</p>
+                        <h1 class="h2 mb-2">{{ title }}</h1>
+                        <p class="text-secondary mb-4">
+                            Add the details you need to keep this account organized.
+                        </p>
                         <form method="post">
                             {% csrf_token %}
-                            {% if form.non_field_errors %}
-                                <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
-                            {% endif %}
-                            {% for field in form %}
-                                {% if field.field.widget.input_type == "checkbox" %}
-                                    <div class="form-check mb-3">
-                                        {{ field }}
-                                        <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-                                        {% for error in field.errors %}
-                                            <div class="text-danger small">{{ error }}</div>
-                                        {% endfor %}
+                            {% bootstrap_form_errors form type="non_fields" %}
+
+                            <h2 class="h6 text-uppercase text-secondary fw-semibold mb-3">Account details</h2>
+                            {% bootstrap_field form.name wrapper_class="mb-3" %}
+                            <div class="row">
+                                <div class="col-md-7">
+                                    {% bootstrap_field form.account_type wrapper_class="mb-3" %}
+                                </div>
+                                <div class="col-md-5">
+                                    {% bootstrap_field form.currency wrapper_class="mb-3" %}
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h2 class="h6 text-uppercase text-secondary fw-semibold mb-3">Starting balance</h2>
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.opening_balance wrapper_class="mb-3" %}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="rounded-3 border bg-body-tertiary p-3 mb-3">
+                                        {% bootstrap_field form.is_active checkbox_style="switch" wrapper_class="mb-0" %}
+                                        <p class="form-text mb-0">Inactive accounts are hidden from your active account list.</p>
                                     </div>
-                                {% else %}
-                                    <div class="mb-3">
-                                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                        {{ field }}
-                                        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-                                        {% for error in field.errors %}
-                                            <div class="text-danger small">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary" type="submit">Save account</button>
-                                <a class="btn btn-outline-secondary" href="{% url 'bank_accounts_index' %}">Cancel</a>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-primary btn-lg px-4" type="submit">
+                                    {% if account %}Save changes{% else %}Create account{% endif %}
+                                </button>
+                                <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'bank_accounts_index' %}">Cancel</a>
                             </div>
                         </form>
                     </div>
